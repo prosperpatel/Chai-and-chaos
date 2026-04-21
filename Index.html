@@ -1,1 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chai & Chaos — Hostel Food Fight</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;700;800&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Baloo 2', sans-serif; -webkit-tap-highlight-color: transparent; }
+        button { font-family: inherit; cursor: pointer; user-select: none; border: none; }
+        button:active { transform: scale(0.96); }
+        @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+        @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.4); } }
+        @keyframes popIn { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // ====== AVATAR COMPONENT ======
+        function Avatar({ who, size = 80 }) {
+            const avatars = {
+                shubhi: (
+                <svg viewBox="0 0 100 110" width={size} height={size}>
+                    <path d="M 18 48 Q 12 85 22 105 L 78 105 Q 88 85 82 48 Q 82 22 50 18 Q 18 22 18 48 Z" fill="#3d2515" />
+                    <path d="M 22 55 Q 18 80 26 100" stroke="#c2986a" strokeWidth="2.5" fill="none" opacity="0.7" />
+                    <path d="M 78 55 Q 82 80 74 100" stroke="#c2986a" strokeWidth="2.5" fill="none" opacity="0.7" />
+                    <path d="M 30 60 Q 28 80 32 95" stroke="#a67a4d" strokeWidth="1.5" fill="none" opacity="0.5" />
+                    <ellipse cx="50" cy="55" rx="21" ry="24" fill="#e8b894" />
+                    <path d="M 28 42 Q 32 28 50 26 Q 68 28 72 42 Q 62 34 50 35 Q 38 34 28 42 Z" fill="#2d1a0e" />
+                    <ellipse cx="42" cy="54" rx="2.5" ry="3" fill="#1a0f08" />
+                    <ellipse cx="58" cy="54" rx="2.5" ry="3" fill="#1a0f08" />
+                    <circle cx="43" cy="53" r="0.8" fill="white" />
+                    <circle cx="59" cy="53" r="0.8" fill="white" />
+                    <path d="M 37 48 Q 42 46 47 49" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
+                    <path d="M 53 49 Q 58 46 63 48" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
+                    <path d="M 44 68 Q 50 72 56 68 Q 53 70 50 70 Q 47 70 44 68 Z" fill="#e91e63" />
+                    <path d="M 24 90 L 26 110 L 74 110 L 76 90 Q 62 83 50 83 Q 38 83 24 90 Z" fill="#4a1a3d" />
+                </svg>
+                ),
+                aish: (
+                <svg viewBox="0 0 100 110" width={size} height={size}>
+                    <path d="M 20 46 Q 14 88 24 108 L 76 108 Q 86 88 80 46 Q 80 20 50 17 Q 20 20 20 46 Z" fill="#0d0604" />
+                    <ellipse cx="50" cy="55" rx="21" ry="24" fill="#d9a578" />
+                    <path d="M 28 40 Q 36 26 50 24 Q 64 26 72 40 L 52 35 L 50 28 L 48 35 Z" fill="#050302" />
+                    <circle cx="50" cy="37" r="2.2" fill="#dc2626" />
+                    <circle cx="50" cy="37" r="1" fill="#7f1d1d" />
+                    <ellipse cx="42" cy="54" rx="2.5" ry="3" fill="#1a0f08" />
+                    <ellipse cx="58" cy="54" rx="2.5" ry="3" fill="#1a0f08" />
+                    <circle cx="43" cy="53" r="0.8" fill="white" />
+                    <circle cx="59" cy="53" r="0.8" fill="white" />
+                    <path d="M 37 49 Q 42 47 47 49" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
+                    <path d="M 53 49 Q 58 47 63 49" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
+                    <path d="M 43 67 Q 50 73 57 67" stroke="#7c2d12" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    <path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#dc2626" />
+                </svg>
+                ),
+                appu: (
+                <svg viewBox="0 0 100 110" width={size} height={size}>
+                    <path d="M 20 46 Q 14 88 24 108 L 76 108 Q 86 88 80 46 Q 80 20 50 17 Q 20 20 20 46 Z" fill="#1a0f08" />
+                    <ellipse cx="50" cy="55" rx="21" ry="24" fill="#d9a578" />
+                    <path d="M 28 42 Q 34 28 50 26 Q 66 28 72 42 Q 60 34 50 35 Q 40 34 28 42 Z" fill="#0d0604" />
+                    <path d="M 30 48 L 48 49 L 50 57 L 48 58 L 32 58 Q 28 57 28 52 Q 28 48 30 48 Z" fill="#1a0f08" />
+                    <path d="M 70 48 L 52 49 L 50 57 L 52 58 L 68 58 Q 72 57 72 52 Q 72 48 70 48 Z" fill="#1a0f08" />
+                    <ellipse cx="38" cy="52" rx="4" ry="2" fill="#4b5563" opacity="0.6" />
+                    <ellipse cx="62" cy="52" rx="4" ry="2" fill="#4b5563" opacity="0.6" />
+                    <path d="M 42 68 Q 50 74 58 68" stroke="#7c2d12" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    <path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#ec4899" />
+                </svg>
+                ),
+                proxy: (
+                <svg viewBox="0 0 100 110" width={size} height={size}>
+                    <path d="M 20 50 Q 15 38 22 30 L 28 20 L 34 28 L 40 16 L 46 26 L 52 14 L 58 26 L 64 18 L 70 28 L 76 22 L 82 36 Q 84 50 80 52 L 20 52 Z" fill="#1a0f08" />
+                    <ellipse cx="50" cy="58" rx="20" ry="23" fill="#c89070" />
+                    <circle cx="40" cy="57" r="8.5" fill="#1a0f08" stroke="#4a2a1a" strokeWidth="1.5" />
+                    <circle cx="60" cy="57" r="8.5" fill="#1a0f08" stroke="#4a2a1a" strokeWidth="1.5" />
+                    <path d="M 43 70 Q 50 67 57 70" stroke="#2d1a0e" strokeWidth="2" fill="none" opacity="0.7" />
+                    <path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#7f1d1d" />
+                </svg>
+                )
+            };
+            return <div style={{ display: "inline-block" }}>{avatars[who]}</div>;
+        }
+
+        // ====== GAME DATA & LOGIC ======
+        const CHARACTERS = {
+            shubhi: { name: "Shubhi", color: "#ec4899", bg: "#fce7f3", power: "PERFECTIONIST", ability: "2× coins on every order!", intro: "Bhhaaii! Main aa gayi!" },
+            aish: { name: "Aish", color: "#dc2626", bg: "#fee2e2", power: "CHARMER", ability: "Customers wait 50% longer 🗣️", intro: "Sun na! Tere ko pta hai?" },
+            appu: { name: "Appu", color: "#f59e0b", bg: "#fef3c7", power: "FOODIE", ability: "+2 seconds on every order 🕶️", intro: "Oye! Achha ji, menu dikhao!" },
+            proxy: { name: "Proxy", color: "#7f1d1d", bg: "#e7e5e4", power: "HACKER", ability: "Every 5th order auto-serves 🤖", intro: "Thik hai. Dekhte hain." }
+        };
+
+        const MENU = [
+            { id: "chai", emoji: "☕", name: "Chai", price: 15 },
+            { id: "maggi", emoji: "🍜", name: "Maggi", price: 30 },
+            { id: "samosa", emoji: "🥟", name: "Samosa", price: 20 },
+            { id: "lassi", emoji: "🥛", name: "Lassi", price: 25 },
+            { id: "pakora", emoji: "🧆", name: "Pakora", price: 35 },
+            { id: "momo", emoji: "🥠", name: "Momos", price: 40 }
+        ];
+
+        const FACES = ["🧑‍🎓", "👨‍💻", "👩‍🎓", "🧕", "👨‍🦱", "👩‍🦰", "🧑‍🦱", "👨‍🎓", "👩"];
+
+        const LEVELS = [
+            { id: 1, name: "Monday Morning", subtitle: "Easy start.", emoji: "☀️", duration: 45, target: 150, spawnRate: 2800, bgGradient: "linear-gradient(180deg, #fef3c7 0%, #fde68a 100%)" },
+            { id: 2, name: "Maggi Rush Hour", subtitle: "Getting busy!", emoji: "🍜", duration: 50, target: 300, spawnRate: 2200, bgGradient: "linear-gradient(180deg, #fed7aa 0%, #fb923c 100%)" },
+            { id: 3, name: "Power Cut Madness", subtitle: "Night shift.", emoji: "🕯️", duration: 55, target: 500, spawnRate: 1800, bgGradient: "linear-gradient(180deg, #1e293b 0%, #334155 100%)" }
+        ];
+
+        // ====== STYLES OBJECT ======
+        const styles = {
+            app: { minHeight: "100vh", background: "#fef3c7", position: "relative", overflow: "hidden" },
+            titleScreen: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", textAlign: "center", padding: 20 },
+            titleLogo: { fontSize: "clamp(40px, 10vw, 72px)", fontWeight: 800, color: "#7c2d12" },
+            playBtn: { background: "#dc2626", color: "white", padding: "16px 32px", fontSize: 20, borderRadius: 50, fontWeight: 800, marginTop: 20, boxShadow: "0 6px 0 #7f1d1d" },
+            playArea: { padding: 10, minHeight: "100vh", display: "flex", flexDirection: "column" },
+            hud: { display: "flex", gap: 10, marginBottom: 10 },
+            hudBox: { flex: 1, background: "white", padding: 10, borderRadius: 12, textAlign: "center", border: "2px solid #1a0f08" },
+            customerArea: { flex: 1, display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", padding: 20 },
+            customer: { background: "white", border: "2px solid #1a0f08", borderRadius: 14, padding: 10, textAlign: "center", width: 100 },
+            menuBar: { background: "white", borderTop: "3px solid #1a0f08", padding: 10, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }
+        };
+
+        // ====== MAIN APP COMPONENT ======
+        function App() {
+            const [scene, setScene] = useState("title");
+            const [score, setScore] = useState(0);
+            const [timeLeft, setTimeLeft] = useState(45);
+            const [customers, setCustomers] = useState([]);
+            const [selected, setSelected] = useState(null);
+
+            useEffect(() => {
+                if (scene === "play") {
+                    const timer = setInterval(() => setTimeLeft(t => t > 0 ? t - 1 : 0), 1000);
+                    const spawner = setInterval(() => {
+                        setCustomers(prev => {
+                            if (prev.length > 3) return prev;
+                            const item = MENU[Math.floor(Math.random() * MENU.length)];
+                            return [...prev, { id: Date.now(), order: item, face: FACES[Math.floor(Math.random() * FACES.length)] }];
+                        });
+                    }, 3000);
+                    return () => { clearInterval(timer); clearInterval(spawner); };
+                }
+            }, [scene]);
+
+            const serve = (id) => {
+                if (!selected) return;
+                const cust = customers.find(c => c.id === id);
+                if (cust.order.id === selected) {
+                    setScore(s => s + cust.order.price);
+                    setCustomers(prev => prev.filter(c => c.id !== id));
+                }
+                setSelected(null);
+            };
+
+            if (scene === "title") {
+                return (
+                    <div style={styles.titleScreen}>
+                        <h1 style={styles.titleLogo}>Chai & Chaos</h1>
+                        <p>Hostel Food Fight Simulator</p>
+                        <button style={styles.playBtn} onClick={() => setScene("play")}>START GAME</button>
+                    </div>
+                );
+            }
+
+            return (
+                <div style={styles.playArea}>
+                    <div style={styles.hud}>
+                        <div style={styles.hudBox}>SCORE: ₹{score}</div>
+                        <div style={styles.hudBox}>TIME: {timeLeft}s</div>
+                    </div>
+                    <div style={styles.customerArea}>
+                        {customers.map(c => (
+                            <div key={c.id} style={styles.customer} onClick={() => serve(c.id)}>
+                                <div style={{fontSize: 30}}>{c.face}</div>
+                                <div style={{fontSize: 20}}>{c.order.emoji}</div>
+                                <div style={{fontSize: 10}}>{c.order.name}</div>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={styles.menuBar}>
+                        {MENU.map(m => (
+                            <button key={m.id} 
+                                onClick={() => setSelected(m.id)}
+                                style={{ 
+                                    padding: 10, 
+                                    borderRadius: 10, 
+                                    background: selected === m.id ? "#fbbf24" : "#eee",
+                                    border: "2px solid #1a0f08"
+                                }}>
+                                {m.emoji} {m.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
 
