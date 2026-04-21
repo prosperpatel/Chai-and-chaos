@@ -1,214 +1,1240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chai & Chaos — Hostel Food Fight</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;700;800&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Baloo 2', sans-serif; -webkit-tap-highlight-color: transparent; }
-        button { font-family: inherit; cursor: pointer; user-select: none; border: none; }
-        button:active { transform: scale(0.96); }
-        @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
-        @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.4); } }
-        @keyframes popIn { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
-        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Chai & Chaos — Hostel Food Fight</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { min-height: 100%; overscroll-behavior: none; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(180deg, #fef3c7 0%, #fbbf24 50%, #f59e0b 100%);
+    color: #1a0f08;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  button { font-family: inherit; cursor: pointer; user-select: none; border: none; background: none; }
+  button:active { transform: scale(0.96); }
+
+  /* Animations */
+  @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+  @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.4); } }
+  @keyframes popIn { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+  @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+  /* Layout */
+  .center-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .mute-btn {
+    position: fixed; top: 12px; right: 12px; z-index: 1000;
+    background: rgba(255,255,255,0.9); border: 3px solid #1a0f08;
+    border-radius: 50%; width: 44px; height: 44px; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+  }
+
+  /* Title */
+  .title-logo {
+    font-size: clamp(42px, 11vw, 72px); font-weight: 900; color: #7c2d12;
+    text-shadow: 3px 3px 0 #fef3c7, 4px 4px 0 #1a0f08;
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .title-tagline { font-size: clamp(18px, 4vw, 24px); color: #dc2626; margin-top: 6px; font-weight: 800; }
+  .title-desc { font-size: 14px; color: #3d2515; margin: 16px auto; max-width: 300px; line-height: 1.5; }
+  .wiggle { animation: wiggle 2s ease-in-out infinite; display: inline-block; }
+
+  /* Buttons */
+  .play-btn {
+    background: #dc2626; color: white; padding: 16px 32px; font-size: 18px;
+    font-weight: 900; border-radius: 50px;
+    box-shadow: 0 6px 0 #7f1d1d, 0 10px 20px rgba(0,0,0,0.2);
+    letter-spacing: 1px;
+  }
+  .ghost-btn {
+    background: rgba(255,255,255,0.8); color: #7c2d12; padding: 9px 18px;
+    font-size: 13px; font-weight: 700; border-radius: 30px;
+  }
+
+  /* How To Play */
+  .how-card {
+    background: white; border-radius: 20px; padding: 22px; max-width: 420px; width: 100%;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15); border: 4px solid #fbbf24;
+  }
+  .how-label {
+    font-size: 11px; letter-spacing: 3px; color: #dc2626; text-align: center; font-weight: 800;
+  }
+  .how-title { font-size: 30px; color: #1a0f08; text-align: center; margin-bottom: 18px; font-weight: 900; }
+  .how-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+  .how-num {
+    background: #dc2626; color: white; width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px; flex-shrink: 0;
+    box-shadow: 0 3px 0 #7f1d1d;
+  }
+  .how-step-title { font-weight: 800; font-size: 15px; margin-bottom: 2px; color: #1a0f08; }
+  .how-step-desc { font-size: 12px; color: #4b5563; line-height: 1.4; }
+  .how-bonus {
+    background: #fef3c7; padding: 11px; border-radius: 12px; margin: 16px 0;
+    font-size: 12px; border: 2px dashed #f59e0b; color: #78350f;
+    text-align: center; font-weight: 700;
+  }
+
+  /* Section */
+  .section-heading { font-size: 32px; color: #7c2d12; font-weight: 900; margin: 4px 0; }
+
+  /* Character Grid */
+  .char-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px; padding: 0 4px;
+  }
+  .char-card {
+    border: 4px solid; border-radius: 18px; padding: 16px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.15); position: relative;
+  }
+  .lock-overlay {
+    position: absolute; inset: 0; background: rgba(255,255,255,0.88);
+    border-radius: 14px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; font-size: 36px; z-index: 2;
+  }
+  .char-name { font-size: 26px; font-weight: 900; text-align: center; margin-top: 4px; }
+  .power-badge {
+    background: #1a0f08; color: #fef3c7; padding: 4px 10px; border-radius: 20px;
+    font-size: 10px; letter-spacing: 2px; font-weight: 800; display: inline-block;
+  }
+  .ability-text { font-size: 12px; color: #1a0f08; text-align: center; margin: 6px 0; font-weight: 700; }
+  .quip-bubble {
+    background: white; padding: 8px 11px; border-radius: 14px; font-size: 12px;
+    font-style: italic; text-align: center; color: #3d2515; font-weight: 700;
+    border: 2px solid rgba(0,0,0,0.1);
+  }
+  .pick-btn {
+    width: 100%; margin-top: 10px; padding: 11px; color: white;
+    font-size: 12px; font-weight: 900; border-radius: 12px; letter-spacing: 1px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  }
+
+  /* Level Select */
+  .level-card {
+    display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 16px;
+    border: 3px solid #1a0f08; box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+    color: #1a0f08; width: 100%;
+  }
+  .level-name { font-size: 17px; font-weight: 800; }
+  .level-sub { font-size: 11px; opacity: 0.8; font-style: italic; margin-top: 2px; }
+  .level-meta { font-size: 10px; margin-top: 3px; font-weight: 700; }
+
+  /* Play */
+  .play-area {
+    min-height: 100vh; padding: 10px; position: relative;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .hud { display: flex; gap: 6px; margin-bottom: 10px; }
+  .hud-box {
+    flex: 1; background: rgba(255,255,255,0.92); padding: 7px 8px;
+    border-radius: 12px; text-align: center; border: 3px solid #1a0f08;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+  }
+  .hud-label { font-size: 9px; letter-spacing: 2px; color: #7c2d12; font-weight: 800; }
+  .hud-value { font-size: 20px; font-weight: 900; color: #1a0f08; }
+  .target-text { font-size: 10px; color: #6b7280; font-weight: 700; }
+  .chef-corner {
+    position: fixed; bottom: 170px; left: 8px; z-index: 10; text-align: center;
+  }
+  .speech-bubble {
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    background: white; border: 3px solid; border-radius: 14px;
+    padding: 6px 10px; font-size: 12px; font-weight: 800;
+    min-width: 130px; text-align: center; white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15); animation: popIn 0.3s ease;
+    margin-bottom: 6px; color: #1a0f08;
+  }
+  .combo-counter { font-size: 13px; font-weight: 900; margin-top: 3px; text-shadow: 2px 2px 0 white; }
+  .combo-flash {
+    position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 42px; font-weight: 900; text-shadow: 3px 3px 0 #1a0f08;
+    z-index: 100; animation: popIn 0.4s ease; pointer-events: none; white-space: nowrap;
+  }
+  .customer-area {
+    flex: 1; display: flex; gap: 8px; flex-wrap: wrap;
+    justify-content: center; align-items: flex-start;
+    padding: 16px 8px; min-height: 200px;
+  }
+  .customer {
+    position: relative; width: 92px; min-height: 120px;
+    background: rgba(255,255,255,0.95); border: 3px solid #1a0f08;
+    border-radius: 14px; padding: 26px 6px 6px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2); cursor: pointer;
+    animation: bob 1.5s infinite;
+  }
+  .customer.urgent { animation: shake 0.4s infinite; }
+  .customer.disabled { opacity: 0.85; }
+  .timer-bar {
+    position: absolute; top: 6px; left: 6px; right: 6px;
+    height: 5px; border-radius: 3px; transition: width 1s linear;
+  }
+  .customer-face { font-size: 38px; text-align: center; }
+  .order-bubble {
+    background: #fef8ed; border: 2px solid; border-radius: 10px;
+    padding: 3px 4px; margin-top: 3px; text-align: center; color: #1a0f08;
+  }
+  .powerup-btn {
+    position: fixed; top: 130px; right: 12px; padding: 10px; border-radius: 16px;
+    color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: bob 1s infinite; z-index: 20; min-width: 80px; text-align: center;
+    border: 3px solid white;
+  }
+  .float-text {
+    position: fixed; bottom: 190px; font-size: 28px; font-weight: 900;
+    animation: floatUp 1.4s ease-out forwards; text-shadow: 2px 2px 0 white;
+    z-index: 50; pointer-events: none;
+  }
+  .menu-bar {
+    position: sticky; bottom: 0; background: rgba(255,255,255,0.96);
+    border-radius: 20px 20px 0 0; padding: 8px; margin-top: auto;
+    border: 3px solid #1a0f08; border-bottom: none;
+  }
+  .menu-label {
+    text-align: center; font-size: 10px; letter-spacing: 2px;
+    font-weight: 800; margin-bottom: 6px;
+  }
+  .menu-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+  .menu-item {
+    padding: 8px 3px; border-radius: 10px; border: 2px solid #1a0f08;
+    text-align: center; transition: transform 0.15s, box-shadow 0.15s;
+    background: #fef8ed; color: #1a0f08; font-weight: 700;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  }
+  .menu-item.selected { transform: translateY(-6px); }
+  .frozen-overlay {
+    position: fixed; inset: 0; background: rgba(96,165,250,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px; font-weight: 900; color: white;
+    text-shadow: 3px 3px 0 #1e40af; z-index: 200;
+    animation: flash 0.6s infinite; pointer-events: none;
+  }
+  .party-overlay {
+    position: fixed; top: 56px; left: 50%; transform: translateX(-50%);
+    background: #ec4899; color: white; padding: 7px 16px; border-radius: 24px;
+    font-size: 13px; font-weight: 900; z-index: 150;
+    animation: bob 0.6s infinite; border: 3px solid white;
+  }
+
+  /* Level End */
+  .end-card {
+    background: white; border-radius: 22px; padding: 22px; max-width: 400px; width: 100%;
+    text-align: center; border: 4px solid; box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  }
+  .end-stats { display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
+  .end-stat { background: #fef3c7; padding: 9px; border-radius: 12px; flex: 1; border: 2px solid #f59e0b; }
+  .end-stat-label { font-size: 9px; letter-spacing: 2px; color: #78350f; font-weight: 800; }
+  .end-stat-value { font-size: 18px; font-weight: 900; color: #1a0f08; }
+  .unlock-badge {
+    background: linear-gradient(90deg, #fbbf24, #f59e0b); color: #7c2d12;
+    padding: 9px 14px; border-radius: 24px; font-size: 14px; font-weight: 900;
+    margin: 12px 0; border: 3px solid #7c2d12; animation: bob 1s infinite;
+  }
+
+  /* Stickers */
+  .sticker-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .sticker {
+    padding: 14px; border-radius: 14px; text-align: center;
+    border: 3px solid #f59e0b; box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+  }
+  .sticker.locked { opacity: 0.25; filter: grayscale(1); background: #f3f4f6; }
+  .sticker.earned { background: #fef3c7; }
+  .sticker-name { font-size: 11px; font-weight: 800; color: #1a0f08; margin-top: 4px; }
+
+  .sound-hint { margin-top: 20px; font-size: 11px; color: #78350f; opacity: 0.7; font-style: italic; }
+</style>
 </head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+<script>
+(function() {
+  'use strict';
 
-        // ====== AVATAR COMPONENT ======
-        function Avatar({ who, size = 80 }) {
-            const avatars = {
-                shubhi: (
-                <svg viewBox="0 0 100 110" width={size} height={size}>
-                    <path d="M 18 48 Q 12 85 22 105 L 78 105 Q 88 85 82 48 Q 82 22 50 18 Q 18 22 18 48 Z" fill="#3d2515" />
-                    <path d="M 22 55 Q 18 80 26 100" stroke="#c2986a" strokeWidth="2.5" fill="none" opacity="0.7" />
-                    <path d="M 78 55 Q 82 80 74 100" stroke="#c2986a" strokeWidth="2.5" fill="none" opacity="0.7" />
-                    <path d="M 30 60 Q 28 80 32 95" stroke="#a67a4d" strokeWidth="1.5" fill="none" opacity="0.5" />
-                    <ellipse cx="50" cy="55" rx="21" ry="24" fill="#e8b894" />
-                    <path d="M 28 42 Q 32 28 50 26 Q 68 28 72 42 Q 62 34 50 35 Q 38 34 28 42 Z" fill="#2d1a0e" />
-                    <ellipse cx="42" cy="54" rx="2.5" ry="3" fill="#1a0f08" />
-                    <ellipse cx="58" cy="54" rx="2.5" ry="3" fill="#1a0f08" />
-                    <circle cx="43" cy="53" r="0.8" fill="white" />
-                    <circle cx="59" cy="53" r="0.8" fill="white" />
-                    <path d="M 37 48 Q 42 46 47 49" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
-                    <path d="M 53 49 Q 58 46 63 48" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
-                    <path d="M 44 68 Q 50 72 56 68 Q 53 70 50 70 Q 47 70 44 68 Z" fill="#e91e63" />
-                    <path d="M 24 90 L 26 110 L 74 110 L 76 90 Q 62 83 50 83 Q 38 83 24 90 Z" fill="#4a1a3d" />
-                </svg>
-                ),
-                aish: (
-                <svg viewBox="0 0 100 110" width={size} height={size}>
-                    <path d="M 20 46 Q 14 88 24 108 L 76 108 Q 86 88 80 46 Q 80 20 50 17 Q 20 20 20 46 Z" fill="#0d0604" />
-                    <ellipse cx="50" cy="55" rx="21" ry="24" fill="#d9a578" />
-                    <path d="M 28 40 Q 36 26 50 24 Q 64 26 72 40 L 52 35 L 50 28 L 48 35 Z" fill="#050302" />
-                    <circle cx="50" cy="37" r="2.2" fill="#dc2626" />
-                    <circle cx="50" cy="37" r="1" fill="#7f1d1d" />
-                    <ellipse cx="42" cy="54" rx="2.5" ry="3" fill="#1a0f08" />
-                    <ellipse cx="58" cy="54" rx="2.5" ry="3" fill="#1a0f08" />
-                    <circle cx="43" cy="53" r="0.8" fill="white" />
-                    <circle cx="59" cy="53" r="0.8" fill="white" />
-                    <path d="M 37 49 Q 42 47 47 49" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
-                    <path d="M 53 49 Q 58 47 63 49" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
-                    <path d="M 43 67 Q 50 73 57 67" stroke="#7c2d12" strokeWidth="2" fill="none" strokeLinecap="round" />
-                    <path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#dc2626" />
-                </svg>
-                ),
-                appu: (
-                <svg viewBox="0 0 100 110" width={size} height={size}>
-                    <path d="M 20 46 Q 14 88 24 108 L 76 108 Q 86 88 80 46 Q 80 20 50 17 Q 20 20 20 46 Z" fill="#1a0f08" />
-                    <ellipse cx="50" cy="55" rx="21" ry="24" fill="#d9a578" />
-                    <path d="M 28 42 Q 34 28 50 26 Q 66 28 72 42 Q 60 34 50 35 Q 40 34 28 42 Z" fill="#0d0604" />
-                    <path d="M 30 48 L 48 49 L 50 57 L 48 58 L 32 58 Q 28 57 28 52 Q 28 48 30 48 Z" fill="#1a0f08" />
-                    <path d="M 70 48 L 52 49 L 50 57 L 52 58 L 68 58 Q 72 57 72 52 Q 72 48 70 48 Z" fill="#1a0f08" />
-                    <ellipse cx="38" cy="52" rx="4" ry="2" fill="#4b5563" opacity="0.6" />
-                    <ellipse cx="62" cy="52" rx="4" ry="2" fill="#4b5563" opacity="0.6" />
-                    <path d="M 42 68 Q 50 74 58 68" stroke="#7c2d12" strokeWidth="2" fill="none" strokeLinecap="round" />
-                    <path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#ec4899" />
-                </svg>
-                ),
-                proxy: (
-                <svg viewBox="0 0 100 110" width={size} height={size}>
-                    <path d="M 20 50 Q 15 38 22 30 L 28 20 L 34 28 L 40 16 L 46 26 L 52 14 L 58 26 L 64 18 L 70 28 L 76 22 L 82 36 Q 84 50 80 52 L 20 52 Z" fill="#1a0f08" />
-                    <ellipse cx="50" cy="58" rx="20" ry="23" fill="#c89070" />
-                    <circle cx="40" cy="57" r="8.5" fill="#1a0f08" stroke="#4a2a1a" strokeWidth="1.5" />
-                    <circle cx="60" cy="57" r="8.5" fill="#1a0f08" stroke="#4a2a1a" strokeWidth="1.5" />
-                    <path d="M 43 70 Q 50 67 57 70" stroke="#2d1a0e" strokeWidth="2" fill="none" opacity="0.7" />
-                    <path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#7f1d1d" />
-                </svg>
-                )
-            };
-            return <div style={{ display: "inline-block" }}>{avatars[who]}</div>;
+  // ==========================================
+  // AUDIO ENGINE
+  // ==========================================
+  let audioCtx = null;
+  let muted = false;
+
+  function getCtx() {
+    if (!audioCtx) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(e) { return null; }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playTone(freq, duration, type, volume) {
+    if (muted) return;
+    type = type || 'sine';
+    volume = volume || 0.15;
+    try {
+      const ctx = getCtx();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  function playSeq(notes, type, volume) {
+    if (muted) return;
+    notes.forEach(function(n, i) {
+      setTimeout(function() { playTone(n.f, n.d || 0.1, type, volume); }, i * (n.g || 60));
+    });
+  }
+
+  const SFX = {
+    tap: function() { playTone(800, 0.05, 'square', 0.08); },
+    select: function() { playTone(1100, 0.08, 'sine', 0.1); },
+    correct: function() { playSeq([{f:523,d:0.1},{f:659,d:0.1},{f:784,d:0.15}], 'sine', 0.15); },
+    wrong: function() { playSeq([{f:200,d:0.1},{f:150,d:0.2}], 'sawtooth', 0.12); },
+    coin: function() { playSeq([{f:988,d:0.08},{f:1319,d:0.15}], 'triangle', 0.12); },
+    leave: function() { playSeq([{f:400,d:0.15},{f:350,d:0.15},{f:250,d:0.3}], 'triangle', 0.1); },
+    combo: function() { playSeq([{f:523,d:0.08},{f:659,d:0.08},{f:784,d:0.08},{f:1047,d:0.2}], 'square', 0.12); },
+    powerup: function() { playSeq([{f:784,d:0.06},{f:988,d:0.06},{f:1319,d:0.06},{f:1568,d:0.12}], 'sine', 0.12); },
+    freeze: function() { playSeq([{f:1500,d:0.2},{f:1200,d:0.2},{f:900,d:0.3}], 'sine', 0.1); },
+    levelWin: function() { playSeq([{f:523,d:0.15,g:120},{f:659,d:0.15,g:120},{f:784,d:0.15,g:120},{f:1047,d:0.3,g:120}], 'square', 0.15); },
+    levelFail: function() { playSeq([{f:400,d:0.2,g:200},{f:350,d:0.2,g:200},{f:300,d:0.2,g:200},{f:200,d:0.4,g:200}], 'sawtooth', 0.12); },
+    unlock: function() { playSeq([{f:659,d:0.1,g:100},{f:784,d:0.1,g:100},{f:988,d:0.1,g:100},{f:1319,d:0.3,g:100}], 'sine', 0.15); },
+    pop: function() { playTone(600, 0.05, 'triangle', 0.08); },
+    whoosh: function() { playTone(300, 0.15, 'sawtooth', 0.05); }
+  };
+
+  // ==========================================
+  // AVATARS (SVG string templates)
+  // ==========================================
+  function avatarSVG(who, size) {
+    const svgs = {
+      shubhi: '<svg viewBox="0 0 100 110" width="' + size + '" height="' + size + '">' +
+        '<path d="M 18 48 Q 12 85 22 105 L 78 105 Q 88 85 82 48 Q 82 22 50 18 Q 18 22 18 48 Z" fill="#3d2515"/>' +
+        '<path d="M 22 55 Q 18 80 26 100" stroke="#c2986a" stroke-width="2.5" fill="none" opacity="0.7"/>' +
+        '<path d="M 78 55 Q 82 80 74 100" stroke="#c2986a" stroke-width="2.5" fill="none" opacity="0.7"/>' +
+        '<ellipse cx="50" cy="55" rx="21" ry="24" fill="#e8b894"/>' +
+        '<path d="M 28 42 Q 32 28 50 26 Q 68 28 72 42 Q 62 34 50 35 Q 38 34 28 42 Z" fill="#2d1a0e"/>' +
+        '<ellipse cx="42" cy="54" rx="2.5" ry="3" fill="#1a0f08"/>' +
+        '<ellipse cx="58" cy="54" rx="2.5" ry="3" fill="#1a0f08"/>' +
+        '<circle cx="43" cy="53" r="0.8" fill="white"/>' +
+        '<circle cx="59" cy="53" r="0.8" fill="white"/>' +
+        '<path d="M 37 48 Q 42 46 47 49" stroke="#1a0f08" stroke-width="1.5" fill="none"/>' +
+        '<path d="M 53 49 Q 58 46 63 48" stroke="#1a0f08" stroke-width="1.5" fill="none"/>' +
+        '<path d="M 44 68 Q 50 72 56 68 Q 53 70 50 70 Q 47 70 44 68 Z" fill="#e91e63"/>' +
+        '<path d="M 24 90 L 26 110 L 74 110 L 76 90 Q 62 83 50 83 Q 38 83 24 90 Z" fill="#4a1a3d"/>' +
+        '<text x="76" y="84" font-size="12">💅</text>' +
+        '</svg>',
+      aish: '<svg viewBox="0 0 100 110" width="' + size + '" height="' + size + '">' +
+        '<path d="M 20 46 Q 14 88 24 108 L 76 108 Q 86 88 80 46 Q 80 20 50 17 Q 20 20 20 46 Z" fill="#0d0604"/>' +
+        '<ellipse cx="50" cy="55" rx="21" ry="24" fill="#d9a578"/>' +
+        '<path d="M 28 40 Q 36 26 50 24 Q 64 26 72 40 L 52 35 L 50 28 L 48 35 Z" fill="#050302"/>' +
+        '<circle cx="50" cy="37" r="2.2" fill="#dc2626"/>' +
+        '<circle cx="50" cy="37" r="1" fill="#7f1d1d"/>' +
+        '<ellipse cx="42" cy="54" rx="2.5" ry="3" fill="#1a0f08"/>' +
+        '<ellipse cx="58" cy="54" rx="2.5" ry="3" fill="#1a0f08"/>' +
+        '<circle cx="43" cy="53" r="0.8" fill="white"/>' +
+        '<circle cx="59" cy="53" r="0.8" fill="white"/>' +
+        '<path d="M 37 49 Q 42 47 47 49" stroke="#1a0f08" stroke-width="1.5" fill="none"/>' +
+        '<path d="M 53 49 Q 58 47 63 49" stroke="#1a0f08" stroke-width="1.5" fill="none"/>' +
+        '<path d="M 43 67 Q 50 73 57 67" stroke="#7c2d12" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+        '<path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#dc2626"/>' +
+        '<circle cx="50" cy="88" r="1" fill="#fbbf24"/>' +
+        '<circle cx="45" cy="92" r="0.8" fill="#fbbf24"/>' +
+        '<circle cx="55" cy="92" r="0.8" fill="#fbbf24"/>' +
+        '<circle cx="42" cy="97" r="0.7" fill="#fbbf24"/>' +
+        '<circle cx="58" cy="97" r="0.7" fill="#fbbf24"/>' +
+        '<path d="M 18 88 Q 14 100 22 110 L 28 110 L 26 92 Z" fill="#b91c1c"/>' +
+        '</svg>',
+      appu: '<svg viewBox="0 0 100 110" width="' + size + '" height="' + size + '">' +
+        '<path d="M 20 46 Q 14 88 24 108 L 76 108 Q 86 88 80 46 Q 80 20 50 17 Q 20 20 20 46 Z" fill="#1a0f08"/>' +
+        '<ellipse cx="50" cy="55" rx="21" ry="24" fill="#d9a578"/>' +
+        '<path d="M 28 42 Q 34 28 50 26 Q 66 28 72 42 Q 60 34 50 35 Q 40 34 28 42 Z" fill="#0d0604"/>' +
+        '<path d="M 30 48 L 48 49 L 50 57 L 48 58 L 32 58 Q 28 57 28 52 Q 28 48 30 48 Z" fill="#1a0f08"/>' +
+        '<path d="M 70 48 L 52 49 L 50 57 L 52 58 L 68 58 Q 72 57 72 52 Q 72 48 70 48 Z" fill="#1a0f08"/>' +
+        '<rect x="48" y="52" width="4" height="2" fill="#1a0f08"/>' +
+        '<ellipse cx="38" cy="52" rx="4" ry="2" fill="#4b5563" opacity="0.6"/>' +
+        '<ellipse cx="62" cy="52" rx="4" ry="2" fill="#4b5563" opacity="0.6"/>' +
+        '<path d="M 42 68 Q 50 74 58 68" stroke="#7c2d12" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+        '<path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#ec4899"/>' +
+        '<path d="M 66 82 Q 82 90 78 110 L 70 110 Q 64 94 62 86 Z" fill="#dc2626"/>' +
+        '<circle cx="72" cy="92" r="0.8" fill="#fef08a"/>' +
+        '<circle cx="74" cy="98" r="0.8" fill="#fef08a"/>' +
+        '<circle cx="70" cy="103" r="0.8" fill="#fef08a"/>' +
+        '<circle cx="27" cy="60" r="2" fill="#fbbf24"/>' +
+        '</svg>',
+      proxy: '<svg viewBox="0 0 100 110" width="' + size + '" height="' + size + '">' +
+        '<path d="M 20 50 Q 15 38 22 30 L 28 20 L 34 28 L 40 16 L 46 26 L 52 14 L 58 26 L 64 18 L 70 28 L 76 22 L 82 36 Q 84 50 80 52 L 20 52 Z" fill="#1a0f08"/>' +
+        '<ellipse cx="50" cy="58" rx="20" ry="23" fill="#c89070"/>' +
+        '<circle cx="40" cy="57" r="8.5" fill="#1a0f08" stroke="#4a2a1a" stroke-width="1.5"/>' +
+        '<circle cx="60" cy="57" r="8.5" fill="#1a0f08" stroke="#4a2a1a" stroke-width="1.5"/>' +
+        '<line x1="48.5" y1="57" x2="51.5" y2="57" stroke="#4a2a1a" stroke-width="2"/>' +
+        '<circle cx="37" cy="54" r="2.5" fill="#6b7280" opacity="0.5"/>' +
+        '<circle cx="57" cy="54" r="2.5" fill="#6b7280" opacity="0.5"/>' +
+        '<ellipse cx="50" cy="73" rx="9" ry="1.8" fill="#2d1a0e" opacity="0.6"/>' +
+        '<path d="M 43 70 Q 50 67 57 70" stroke="#2d1a0e" stroke-width="2" fill="none" opacity="0.7"/>' +
+        '<path d="M 46 76 L 54 76" stroke="#4a2a1a" stroke-width="1.5" stroke-linecap="round"/>' +
+        '<path d="M 22 90 L 24 110 L 76 110 L 78 90 Q 62 82 50 82 Q 38 82 22 90 Z" fill="#7f1d1d"/>' +
+        '<path d="M 42 83 L 40 92 L 50 88 L 60 92 L 58 83 Z" fill="#5f0f0f"/>' +
+        '<line x1="50" y1="88" x2="50" y2="110" stroke="#9ca3af" stroke-width="1.2"/>' +
+        '<circle cx="50" cy="95" r="1.2" fill="#d1d5db"/>' +
+        '<path d="M 50 83 Q 44 92 47 100 Q 49 105 46 110" stroke="#ea580c" stroke-width="2" fill="none"/>' +
+        '</svg>'
+    };
+    return svgs[who] || '';
+  }
+
+  // ==========================================
+  // DATA
+  // ==========================================
+  const CHARACTERS = {
+    shubhi: {
+      name: "Shubhi", color: "#ec4899", bg: "#fce7f3",
+      power: "PERFECTIONIST", ability: "2× coins on every order!",
+      intro: "Bhhaaii! Main aa gayi!",
+      servedQuips: ["Bhhaaii easy tha!", "Abe jaa naa, next!", "Bhhaaii mast!"],
+      leftQuips: ["Abe jaa naa!", "Bhhaaii tension!"],
+      comboQuips: ["BHHAAII YAAR! 🔥", "ABE JAA NAA, on fire!"],
+      gameOverQuip: "Bhhaaii thak gayi. Phir khelte hain."
+    },
+    aish: {
+      name: "Aish", color: "#dc2626", bg: "#fee2e2",
+      power: "CHARMER", ability: "Customers wait 50% longer 🗣️",
+      intro: "Sun na! Tere ko pta hai?",
+      servedQuips: ["Sun na, mast tha!", "Tere ko pta hai? Best hoon!", "Sun na, ek aur!"],
+      leftQuips: ["Sun na, ruk jaa!", "Tere ko pta hai bura laga?"],
+      comboQuips: ["SUN NA, COMBO!", "TERE KO PTA HAI? LEGEND!"],
+      gameOverQuip: "Sun na, phir khelenge!"
+    },
+    appu: {
+      name: "Appu", color: "#f59e0b", bg: "#fef3c7",
+      power: "FOODIE", ability: "+2 seconds on every order 🕶️",
+      intro: "Oye! Achha ji, menu dikhao!",
+      servedQuips: ["Oye mast!", "Achha ji, easy!", "Oye, next plate!"],
+      leftQuips: ["Oye ruk!", "Achha ji, aise kaise?"],
+      comboQuips: ["OYE! FIRE ON!", "ACHHA JI, UNSTOPPABLE!"],
+      gameOverQuip: "Oye bas? Achha ji, phir se!"
+    },
+    proxy: {
+      name: "Proxy", color: "#7f1d1d", bg: "#e7e5e4",
+      power: "HACKER", ability: "Every 5th order auto-serves 🤖",
+      intro: "Thik hai. Dekhte hain.",
+      servedQuips: ["Thik hai.", "Dekhte hain.", "Hmm."],
+      leftQuips: ["Thik hai.", "..."],
+      comboQuips: ["Dekhte hain... chal raha hai.", "Thik hai. Locked."],
+      gameOverQuip: "Thik hai. Dekhte hain phir."
+    }
+  };
+
+  const MENU = [
+    { id: "chai", emoji: "☕", name: "Chai", price: 15 },
+    { id: "maggi", emoji: "🍜", name: "Maggi", price: 30 },
+    { id: "samosa", emoji: "🥟", name: "Samosa", price: 20 },
+    { id: "lassi", emoji: "🥛", name: "Lassi", price: 25 },
+    { id: "pakora", emoji: "🧆", name: "Pakora", price: 35 },
+    { id: "momo", emoji: "🥠", name: "Momos", price: 40 }
+  ];
+
+  const FACES = ["🧑‍🎓", "👨‍💻", "👩‍🎓", "🧕", "👨‍🦱", "👩‍🦰", "🧑‍🦱", "👨‍🎓", "👩"];
+
+  const LEVELS = [
+    { id: 1, name: "Monday Morning", subtitle: "Easy start. Everyone's sleepy.", emoji: "☀️", duration: 45, target: 150, spawnRate: 2800, bg: "linear-gradient(180deg, #fef3c7 0%, #fde68a 100%)" },
+    { id: 2, name: "Maggi Rush Hour", subtitle: "EVERYONE wants Maggi.", emoji: "🍜", duration: 50, target: 300, spawnRate: 2200, bg: "linear-gradient(180deg, #fed7aa 0%, #fb923c 100%)" },
+    { id: 3, name: "Power Cut Madness", subtitle: "Bijli gayi. Candles only.", emoji: "🕯️", duration: 55, target: 500, spawnRate: 1800, bg: "linear-gradient(180deg, #1e293b 0%, #334155 100%)" }
+  ];
+
+  const POWERUPS = [
+    { name: "FREEZE", emoji: "❄️", desc: "Pause timers 4s", color: "#60a5fa" },
+    { name: "MONEY RAIN", emoji: "💰", desc: "+₹100", color: "#fbbf24" },
+    { name: "PARTY", emoji: "🎉", desc: "2× coins 6s", color: "#ec4899" }
+  ];
+
+  const COMBO_TIERS = [
+    { min: 3, label: "NICE! 🎯", color: "#10b981" },
+    { min: 5, label: "ON FIRE! 🔥", color: "#f59e0b" },
+    { min: 10, label: "SAMOSA STAR! ⭐", color: "#ec4899" },
+    { min: 15, label: "CHAI CHAMPION! 👑", color: "#8b5cf6" }
+  ];
+
+  function getTier(c) {
+    let t = null;
+    for (let i = 0; i < COMBO_TIERS.length; i++) if (c >= COMBO_TIERS[i].min) t = COMBO_TIERS[i];
+    return t;
+  }
+
+  const STICKERS = [
+    { id: "first-serve", emoji: "🎉", name: "First Customer" },
+    { id: "combo-5", emoji: "🔥", name: "5-Combo" },
+    { id: "combo-10", emoji: "⭐", name: "10-Combo" },
+    { id: "level1-clear", emoji: "☀️", name: "Monday Master" },
+    { id: "level2-clear", emoji: "🍜", name: "Maggi Survivor" },
+    { id: "level3-clear", emoji: "🕯️", name: "Blackout Hero" },
+    { id: "all-chars", emoji: "💎", name: "Played All 4" },
+    { id: "power-up", emoji: "⚡", name: "Power-up Grabber" }
+  ];
+
+  // ==========================================
+  // STATE
+  // ==========================================
+  const state = {
+    scene: 'title',
+    chef: null,
+    level: 1,
+    unlocked: ['shubhi'],
+    playedChars: [],
+    stickers: [],
+    highScore: 0,
+    score: 0,
+    lives: 3,
+    timeLeft: 45,
+    customers: [],
+    selected: null,
+    combo: 0,
+    served: 0,
+    floatingTexts: [],
+    powerup: null,
+    frozen: false,
+    partyMode: false,
+    speechBubble: null,
+    comboFlash: null,
+    paused: false
+  };
+
+  let custIdCounter = 0;
+  let floatIdCounter = 0;
+  let spawnerInt = null;
+  let tickerInt = null;
+  let puInt = null;
+
+  // ==========================================
+  // HELPERS
+  // ==========================================
+  function $(sel) { return document.querySelector(sel); }
+
+  function addFloat(text, color) {
+    const id = ++floatIdCounter;
+    state.floatingTexts.push({ id: id, text: text, color: color, x: Math.random() * 50 + 25 });
+    updateFloats();
+    setTimeout(function() {
+      state.floatingTexts = state.floatingTexts.filter(function(f) { return f.id !== id; });
+      updateFloats();
+    }, 1400);
+  }
+
+  function updateFloats() {
+    const container = $('#floats');
+    if (!container) return;
+    container.innerHTML = state.floatingTexts.map(function(f) {
+      return '<div class="float-text" style="left:' + f.x + '%; color:' + f.color + '">' + f.text + '</div>';
+    }).join('');
+  }
+
+  function showSpeech(type) {
+    if (!state.chef) return;
+    const c = CHARACTERS[state.chef];
+    let text = "";
+    if (type === "served") text = c.servedQuips[Math.floor(Math.random() * c.servedQuips.length)];
+    else if (type === "left") text = c.leftQuips[Math.floor(Math.random() * c.leftQuips.length)];
+    else if (type === "combo") text = c.comboQuips[Math.floor(Math.random() * c.comboQuips.length)];
+    else if (type === "intro") text = c.intro;
+    state.speechBubble = text;
+    const b = $('#speech');
+    if (b) {
+      b.textContent = text;
+      b.style.display = 'block';
+      b.style.borderColor = c.color;
+    }
+    setTimeout(function() {
+      state.speechBubble = null;
+      const bb = $('#speech');
+      if (bb) bb.style.display = 'none';
+    }, 1800);
+  }
+
+  function addSticker(id) {
+    if (state.stickers.indexOf(id) === -1) state.stickers.push(id);
+  }
+
+  // ==========================================
+  // GAME LOGIC
+  // ==========================================
+  function makeCustomer() {
+    const item = MENU[Math.floor(Math.random() * MENU.length)];
+    const face = FACES[Math.floor(Math.random() * FACES.length)];
+    let base = 8 - Math.floor(state.level / 2);
+    if (state.chef === "aish") base = Math.floor(base * 1.5);
+    if (state.chef === "appu") base += 2;
+    return { id: ++custIdCounter, face: face, orderId: item.id, ticksLeft: base, maxTicks: base };
+  }
+
+  function tickCustomers() {
+    if (state.paused) return;
+    const remaining = [];
+    for (let i = 0; i < state.customers.length; i++) {
+      const c = state.customers[i];
+      c.ticksLeft -= 1;
+      if (c.ticksLeft <= 0) {
+        state.lives -= 1;
+        state.combo = 0;
+        addFloat("💔", "#dc2626");
+        showSpeech("left");
+        SFX.leave();
+      } else {
+        remaining.push(c);
+      }
+    }
+    state.customers = remaining;
+    state.timeLeft -= 1;
+    updatePlayHUD();
+    updateCustomers();
+
+    if (state.lives <= 0 || state.timeLeft <= 0) {
+      endLevel();
+    }
+  }
+
+  function spawnCustomer() {
+    if (state.paused) return;
+    if (state.customers.length >= 4) return;
+    state.customers.push(makeCustomer());
+    SFX.pop();
+    updateCustomers();
+  }
+
+  function spawnPowerup() {
+    if (state.paused || state.powerup) return;
+    if (Math.random() > 0.5) {
+      const pu = POWERUPS[Math.floor(Math.random() * POWERUPS.length)];
+      state.powerup = Object.assign({}, pu, { id: Date.now() });
+      SFX.whoosh();
+      updatePowerup();
+      const myId = state.powerup.id;
+      setTimeout(function() {
+        if (state.powerup && state.powerup.id === myId) {
+          state.powerup = null;
+          updatePowerup();
         }
+      }, 4000);
+    }
+  }
 
-        // ====== GAME DATA & LOGIC ======
-        const CHARACTERS = {
-            shubhi: { name: "Shubhi", color: "#ec4899", bg: "#fce7f3", power: "PERFECTIONIST", ability: "2× coins on every order!", intro: "Bhhaaii! Main aa gayi!" },
-            aish: { name: "Aish", color: "#dc2626", bg: "#fee2e2", power: "CHARMER", ability: "Customers wait 50% longer 🗣️", intro: "Sun na! Tere ko pta hai?" },
-            appu: { name: "Appu", color: "#f59e0b", bg: "#fef3c7", power: "FOODIE", ability: "+2 seconds on every order 🕶️", intro: "Oye! Achha ji, menu dikhao!" },
-            proxy: { name: "Proxy", color: "#7f1d1d", bg: "#e7e5e4", power: "HACKER", ability: "Every 5th order auto-serves 🤖", intro: "Thik hai. Dekhte hain." }
-        };
+  function serveCustomer(customerId) {
+    const customer = state.customers.find(function(c) { return c.id === customerId; });
+    if (!customer || !state.selected) return;
 
-        const MENU = [
-            { id: "chai", emoji: "☕", name: "Chai", price: 15 },
-            { id: "maggi", emoji: "🍜", name: "Maggi", price: 30 },
-            { id: "samosa", emoji: "🥟", name: "Samosa", price: 20 },
-            { id: "lassi", emoji: "🥛", name: "Lassi", price: 25 },
-            { id: "pakora", emoji: "🧆", name: "Pakora", price: 35 },
-            { id: "momo", emoji: "🥠", name: "Momos", price: 40 }
-        ];
+    if (customer.orderId === state.selected) {
+      const item = MENU.find(function(m) { return m.id === state.selected; });
+      let earned = item.price;
+      if (state.chef === "shubhi") earned *= 2;
+      if (state.partyMode) earned *= 2;
+      const comboBonus = Math.floor(state.combo * 3);
+      const total = earned + comboBonus;
 
-        const FACES = ["🧑‍🎓", "👨‍💻", "👩‍🎓", "🧕", "👨‍🦱", "👩‍🦰", "🧑‍🦱", "👨‍🎓", "👩"];
+      SFX.correct();
+      setTimeout(function() { SFX.coin(); }, 100);
 
-        const LEVELS = [
-            { id: 1, name: "Monday Morning", subtitle: "Easy start.", emoji: "☀️", duration: 45, target: 150, spawnRate: 2800, bgGradient: "linear-gradient(180deg, #fef3c7 0%, #fde68a 100%)" },
-            { id: 2, name: "Maggi Rush Hour", subtitle: "Getting busy!", emoji: "🍜", duration: 50, target: 300, spawnRate: 2200, bgGradient: "linear-gradient(180deg, #fed7aa 0%, #fb923c 100%)" },
-            { id: 3, name: "Power Cut Madness", subtitle: "Night shift.", emoji: "🕯️", duration: 55, target: 500, spawnRate: 1800, bgGradient: "linear-gradient(180deg, #1e293b 0%, #334155 100%)" }
-        ];
+      state.score += total;
+      state.combo += 1;
+      const tier = getTier(state.combo);
+      if (tier && state.combo === tier.min) {
+        state.comboFlash = tier;
+        showComboFlash(tier);
+        showSpeech("combo");
+        SFX.combo();
+        if (state.combo === 5) addSticker("combo-5");
+        if (state.combo === 10) addSticker("combo-10");
+      }
 
-        // ====== STYLES OBJECT ======
-        const styles = {
-            app: { minHeight: "100vh", background: "#fef3c7", position: "relative", overflow: "hidden" },
-            titleScreen: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", textAlign: "center", padding: 20 },
-            titleLogo: { fontSize: "clamp(40px, 10vw, 72px)", fontWeight: 800, color: "#7c2d12" },
-            playBtn: { background: "#dc2626", color: "white", padding: "16px 32px", fontSize: 20, borderRadius: 50, fontWeight: 800, marginTop: 20, boxShadow: "0 6px 0 #7f1d1d" },
-            playArea: { padding: 10, minHeight: "100vh", display: "flex", flexDirection: "column" },
-            hud: { display: "flex", gap: 10, marginBottom: 10 },
-            hudBox: { flex: 1, background: "white", padding: 10, borderRadius: 12, textAlign: "center", border: "2px solid #1a0f08" },
-            customerArea: { flex: 1, display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", padding: 20 },
-            customer: { background: "white", border: "2px solid #1a0f08", borderRadius: 14, padding: 10, textAlign: "center", width: 100 },
-            menuBar: { background: "white", borderTop: "3px solid #1a0f08", padding: 10, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }
-        };
+      state.served += 1;
+      if (state.served === 1) addSticker("first-serve");
 
-        // ====== MAIN APP COMPONENT ======
-        function App() {
-            const [scene, setScene] = useState("title");
-            const [score, setScore] = useState(0);
-            const [timeLeft, setTimeLeft] = useState(45);
-            const [customers, setCustomers] = useState([]);
-            const [selected, setSelected] = useState(null);
+      if (state.chef === "proxy" && state.served % 5 === 0) {
+        setTimeout(function() {
+          if (state.customers.length > 0) {
+            const auto = state.customers[0];
+            const autoItem = MENU.find(function(m) { return m.id === auto.orderId; });
+            state.score += autoItem.price;
+            state.customers = state.customers.slice(1);
+            addFloat("🤖 +₹" + autoItem.price, "#7f1d1d");
+            SFX.coin();
+            updateCustomers();
+            updatePlayHUD();
+          }
+        }, 300);
+      }
 
-            useEffect(() => {
-                if (scene === "play") {
-                    const timer = setInterval(() => setTimeLeft(t => t > 0 ? t - 1 : 0), 1000);
-                    const spawner = setInterval(() => {
-                        setCustomers(prev => {
-                            if (prev.length > 3) return prev;
-                            const item = MENU[Math.floor(Math.random() * MENU.length)];
-                            return [...prev, { id: Date.now(), order: item, face: FACES[Math.floor(Math.random() * FACES.length)] }];
-                        });
-                    }, 3000);
-                    return () => { clearInterval(timer); clearInterval(spawner); };
-                }
-            }, [scene]);
+      addFloat("+₹" + total, "#16a34a");
+      showSpeech("served");
+      state.customers = state.customers.filter(function(c) { return c.id !== customerId; });
+    } else {
+      SFX.wrong();
+      state.combo = 0;
+      state.lives -= 1;
+      addFloat("✗", "#dc2626");
+      showSpeech("left");
+    }
+    state.selected = null;
+    updateCustomers();
+    updateMenu();
+    updatePlayHUD();
 
-            const serve = (id) => {
-                if (!selected) return;
-                const cust = customers.find(c => c.id === id);
-                if (cust.order.id === selected) {
-                    setScore(s => s + cust.order.price);
-                    setCustomers(prev => prev.filter(c => c.id !== id));
-                }
-                setSelected(null);
-            };
+    if (state.lives <= 0) endLevel();
+  }
 
-            if (scene === "title") {
-                return (
-                    <div style={styles.titleScreen}>
-                        <h1 style={styles.titleLogo}>Chai & Chaos</h1>
-                        <p>Hostel Food Fight Simulator</p>
-                        <button style={styles.playBtn} onClick={() => setScene("play")}>START GAME</button>
-                    </div>
-                );
-            }
+  function showComboFlash(tier) {
+    const el = document.createElement('div');
+    el.className = 'combo-flash';
+    el.style.color = tier.color;
+    el.textContent = tier.label;
+    document.body.appendChild(el);
+    setTimeout(function() { el.remove(); }, 1200);
+  }
 
-            return (
-                <div style={styles.playArea}>
-                    <div style={styles.hud}>
-                        <div style={styles.hudBox}>SCORE: ₹{score}</div>
-                        <div style={styles.hudBox}>TIME: {timeLeft}s</div>
-                    </div>
-                    <div style={styles.customerArea}>
-                        {customers.map(c => (
-                            <div key={c.id} style={styles.customer} onClick={() => serve(c.id)}>
-                                <div style={{fontSize: 30}}>{c.face}</div>
-                                <div style={{fontSize: 20}}>{c.order.emoji}</div>
-                                <div style={{fontSize: 10}}>{c.order.name}</div>
-                            </div>
-                        ))}
-                    </div>
-                    <div style={styles.menuBar}>
-                        {MENU.map(m => (
-                            <button key={m.id} 
-                                onClick={() => setSelected(m.id)}
-                                style={{ 
-                                    padding: 10, 
-                                    borderRadius: 10, 
-                                    background: selected === m.id ? "#fbbf24" : "#eee",
-                                    border: "2px solid #1a0f08"
-                                }}>
-                                {m.emoji} {m.name}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            );
-        }
+  function grabPowerup() {
+    if (!state.powerup) return;
+    SFX.powerup();
+    const pu = state.powerup;
+    if (pu.name === "FREEZE") {
+      state.frozen = true;
+      state.paused = true;
+      SFX.freeze();
+      showFrozenOverlay();
+      setTimeout(function() {
+        state.frozen = false;
+        state.paused = false;
+        hideFrozenOverlay();
+      }, 4000);
+    } else if (pu.name === "MONEY RAIN") {
+      state.score += 100;
+      addFloat("+₹100 💰", "#fbbf24");
+      SFX.coin();
+      updatePlayHUD();
+    } else if (pu.name === "PARTY") {
+      state.partyMode = true;
+      showPartyOverlay();
+      setTimeout(function() {
+        state.partyMode = false;
+        hidePartyOverlay();
+      }, 6000);
+    }
+    addSticker("power-up");
+    state.powerup = null;
+    updatePowerup();
+  }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+  function showFrozenOverlay() {
+    const el = document.createElement('div');
+    el.id = 'frozenOv';
+    el.className = 'frozen-overlay';
+    el.innerHTML = '❄️ FROZEN ❄️';
+    document.body.appendChild(el);
+  }
+  function hideFrozenOverlay() { const e = $('#frozenOv'); if (e) e.remove(); }
+  function showPartyOverlay() {
+    const el = document.createElement('div');
+    el.id = 'partyOv';
+    el.className = 'party-overlay';
+    el.innerHTML = '🎉 PARTY! 2× COINS 🎉';
+    document.body.appendChild(el);
+  }
+  function hidePartyOverlay() { const e = $('#partyOv'); if (e) e.remove(); }
+
+  function startLevel(lvlNum) {
+    SFX.whoosh();
+    const lv = LEVELS[lvlNum - 1];
+    state.level = lvlNum;
+    state.score = 0;
+    state.lives = 3;
+    state.timeLeft = lv.duration;
+    state.customers = [];
+    state.combo = 0;
+    state.served = 0;
+    state.selected = null;
+    state.floatingTexts = [];
+    state.powerup = null;
+    state.frozen = false;
+    state.partyMode = false;
+    state.paused = false;
+    state.scene = 'play';
+    render();
+    setTimeout(function() { showSpeech("intro"); }, 300);
+
+    // Start loops
+    clearInterval(spawnerInt); clearInterval(tickerInt); clearInterval(puInt);
+    spawnerInt = setInterval(spawnCustomer, lv.spawnRate);
+    tickerInt = setInterval(tickCustomers, 1000);
+    puInt = setInterval(spawnPowerup, 8000);
+  }
+
+  function endLevel() {
+    state.paused = true;
+    clearInterval(spawnerInt); clearInterval(tickerInt); clearInterval(puInt);
+    spawnerInt = tickerInt = puInt = null;
+
+    const lv = LEVELS[state.level - 1];
+    const won = state.score >= lv.target;
+    if (won) {
+      SFX.levelWin();
+      const stickMap = { 1: "level1-clear", 2: "level2-clear", 3: "level3-clear" };
+      if (stickMap[state.level]) addSticker(stickMap[state.level]);
+      const unlockMap = { 1: "aish", 2: "appu", 3: "proxy" };
+      const next = unlockMap[state.level];
+      if (next && state.unlocked.indexOf(next) === -1) {
+        state.unlocked.push(next);
+        setTimeout(function() { SFX.unlock(); }, 800);
+      }
+    } else {
+      SFX.levelFail();
+    }
+    if (state.score > state.highScore) state.highScore = state.score;
+
+    setTimeout(function() {
+      state.scene = 'levelEnd';
+      render();
+    }, 400);
+  }
+
+  function pickChef(key) {
+    if (state.unlocked.indexOf(key) === -1) { SFX.wrong(); return; }
+    SFX.select();
+    state.chef = key;
+    if (state.playedChars.indexOf(key) === -1) state.playedChars.push(key);
+    if (state.playedChars.length === 4) addSticker("all-chars");
+    state.scene = 'levelSelect';
+    render();
+  }
+
+  // ==========================================
+  // TARGETED UPDATES (during play)
+  // ==========================================
+  function updatePlayHUD() {
+    const lv = LEVELS[state.level - 1];
+    const scoreEl = $('#score');
+    const timeEl = $('#time');
+    const livesEl = $('#lives');
+    if (scoreEl) scoreEl.textContent = '₹' + state.score;
+    if (timeEl) {
+      timeEl.textContent = state.timeLeft + 's';
+      timeEl.style.color = state.timeLeft < 10 ? '#dc2626' : '';
+    }
+    if (livesEl) {
+      let hearts = '';
+      for (let i = 0; i < state.lives; i++) hearts += '❤️';
+      livesEl.textContent = hearts;
+    }
+    const comboEl = $('#combo');
+    if (comboEl) {
+      if (state.combo > 0) {
+        comboEl.textContent = state.combo + '× COMBO';
+        comboEl.style.display = 'block';
+      } else {
+        comboEl.style.display = 'none';
+      }
+    }
+  }
+
+  function updateCustomers() {
+    const area = $('#customer-area');
+    if (!area) return;
+    if (state.customers.length === 0) {
+      area.innerHTML = '<div style="text-align:center; opacity:0.6; margin-top:40px; font-size:13px;">Waiting for customers...</div>';
+      return;
+    }
+    const isDark = state.level === 3;
+    area.innerHTML = state.customers.map(function(cust) {
+      const item = MENU.find(function(m) { return m.id === cust.orderId; });
+      const pct = (cust.ticksLeft / cust.maxTicks) * 100;
+      const urgent = pct < 30;
+      const barColor = urgent ? '#dc2626' : '#10b981';
+      const disabled = state.selected ? '' : 'disabled';
+      return '<button class="customer ' + (urgent ? 'urgent' : '') + ' ' + disabled + '" data-cid="' + cust.id + '">' +
+        '<div class="timer-bar" style="background:' + barColor + '; width:' + pct + '%;"></div>' +
+        '<div class="customer-face">' + cust.face + '</div>' +
+        '<div class="order-bubble" style="border-color:' + (isDark ? '#fef3c7' : '#1a0f08') + ';">' +
+          '<div style="font-size:22px;">' + item.emoji + '</div>' +
+          '<div style="font-size:9px; font-weight:800;">' + item.name + '</div>' +
+        '</div>' +
+      '</button>';
+    }).join('');
+    // Re-attach handlers
+    const btns = area.querySelectorAll('.customer');
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].addEventListener('click', function() {
+        const cid = parseInt(this.getAttribute('data-cid'), 10);
+        serveCustomer(cid);
+      });
+    }
+  }
+
+  function updateMenu() {
+    const grid = $('#menu-grid');
+    if (!grid) return;
+    const c = CHARACTERS[state.chef];
+    const items = grid.querySelectorAll('.menu-item');
+    for (let i = 0; i < items.length; i++) {
+      const id = items[i].getAttribute('data-id');
+      if (id === state.selected) {
+        items[i].classList.add('selected');
+        items[i].style.background = c.color;
+        items[i].style.color = 'white';
+        items[i].style.boxShadow = '0 8px 0 ' + c.color + 'dd';
+      } else {
+        items[i].classList.remove('selected');
+        items[i].style.background = '#fef8ed';
+        items[i].style.color = '#1a0f08';
+        items[i].style.boxShadow = '0 4px 0 rgba(0,0,0,0.2)';
+      }
+    }
+  }
+
+  function updatePowerup() {
+    let container = $('#powerup-slot');
+    if (!container) return;
+    if (!state.powerup) {
+      container.innerHTML = '';
+      return;
+    }
+    const pu = state.powerup;
+    container.innerHTML = '<button class="powerup-btn" id="pu-btn" style="background:' + pu.color + ';">' +
+      '<div style="font-size:26px;">' + pu.emoji + '</div>' +
+      '<div style="font-size:10px; font-weight:900;">' + pu.name + '</div>' +
+      '<div style="font-size:9px;">' + pu.desc + '</div>' +
+    '</button>';
+    const btn = $('#pu-btn');
+    if (btn) btn.addEventListener('click', grabPowerup);
+  }
+
+  // ==========================================
+  // RENDER
+  // ==========================================
+  function render() {
+    const root = $('#root');
+    if (state.scene === 'title') root.innerHTML = renderTitle();
+    else if (state.scene === 'howto') root.innerHTML = renderHowTo();
+    else if (state.scene === 'characterSelect') root.innerHTML = renderCharSelect();
+    else if (state.scene === 'levelSelect') root.innerHTML = renderLevelSelect();
+    else if (state.scene === 'play') root.innerHTML = renderPlay();
+    else if (state.scene === 'levelEnd') root.innerHTML = renderLevelEnd();
+    else if (state.scene === 'stickers') root.innerHTML = renderStickers();
+
+    attachMuteBtn();
+    attachHandlers();
+  }
+
+  function attachMuteBtn() {
+    // ensure mute button exists
+    let btn = $('#mute-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'mute-btn';
+      btn.className = 'mute-btn';
+      btn.textContent = muted ? '🔇' : '🔊';
+      btn.addEventListener('click', function() {
+        muted = !muted;
+        btn.textContent = muted ? '🔇' : '🔊';
+        if (!muted) SFX.select();
+      });
+      document.body.appendChild(btn);
+    }
+  }
+
+  function attachHandlers() {
+    // Title
+    const startBtn = $('#start-btn');
+    if (startBtn) startBtn.addEventListener('click', function() { SFX.select(); state.scene = 'howto'; render(); });
+    const stickersBtn = $('#stickers-btn');
+    if (stickersBtn) stickersBtn.addEventListener('click', function() { SFX.select(); state.scene = 'stickers'; render(); });
+
+    // HowTo
+    const nextBtn = $('#next-btn');
+    if (nextBtn) nextBtn.addEventListener('click', function() { SFX.select(); state.scene = 'characterSelect'; render(); });
+
+    // Char select
+    const charBtns = document.querySelectorAll('[data-chef]');
+    for (let i = 0; i < charBtns.length; i++) {
+      charBtns[i].addEventListener('click', function() {
+        pickChef(this.getAttribute('data-chef'));
+      });
+    }
+    const backToTitle = $('#back-title');
+    if (backToTitle) backToTitle.addEventListener('click', function() { SFX.tap(); state.scene = 'title'; render(); });
+
+    // Level select
+    const lvlBtns = document.querySelectorAll('[data-level]');
+    for (let i = 0; i < lvlBtns.length; i++) {
+      lvlBtns[i].addEventListener('click', function() {
+        startLevel(parseInt(this.getAttribute('data-level'), 10));
+      });
+    }
+    const backToChar = $('#back-char');
+    if (backToChar) backToChar.addEventListener('click', function() { SFX.tap(); state.scene = 'characterSelect'; render(); });
+
+    // Play - menu items
+    const menuItems = document.querySelectorAll('.menu-item');
+    for (let i = 0; i < menuItems.length; i++) {
+      menuItems[i].addEventListener('click', function() {
+        SFX.tap();
+        state.selected = this.getAttribute('data-id');
+        updateMenu();
+      });
+    }
+
+    // Play - customers (initial)
+    const custBtns = document.querySelectorAll('.customer');
+    for (let i = 0; i < custBtns.length; i++) {
+      custBtns[i].addEventListener('click', function() {
+        const cid = parseInt(this.getAttribute('data-cid'), 10);
+        serveCustomer(cid);
+      });
+    }
+
+    // Level end
+    const continueBtn = $('#continue-btn');
+    if (continueBtn) continueBtn.addEventListener('click', function() {
+      SFX.select();
+      const lv = LEVELS[state.level - 1];
+      if (state.score >= lv.target && state.level < 3) {
+        state.level += 1;
+        state.scene = 'levelSelect';
+      } else {
+        state.scene = 'levelSelect';
+      }
+      render();
+    });
+    const menuBtn = $('#menu-btn');
+    if (menuBtn) menuBtn.addEventListener('click', function() { SFX.tap(); state.scene = 'title'; render(); });
+
+    // Stickers back
+    const stickersBack = $('#stickers-back');
+    if (stickersBack) stickersBack.addEventListener('click', function() { SFX.tap(); state.scene = 'title'; render(); });
+  }
+
+  function renderTitle() {
+    return '<div class="center-screen">' +
+      '<div style="text-align:center; padding:20px;">' +
+        '<div class="wiggle" style="font-size:60px; margin-bottom:6px;">☕🍜🥟</div>' +
+        '<h1 class="title-logo">Chai & Chaos</h1>' +
+        '<div class="title-tagline">Hostel Food Fight!</div>' +
+        '<p class="title-desc">Canteen Aunty is missing.<br>Hungry students are screaming.<br><strong>You have 45 seconds. Go!</strong></p>' +
+        '<div style="display:flex; justify-content:center; gap:6px; margin:20px 0; flex-wrap:wrap;">' +
+          avatarSVG('shubhi', 74) + avatarSVG('aish', 74) + avatarSVG('appu', 74) + avatarSVG('proxy', 74) +
+        '</div>' +
+        '<button id="start-btn" class="play-btn">▶ PLAY</button>' +
+        '<div style="margin-top:14px;"><button id="stickers-btn" class="ghost-btn">🏆 Sticker Book (' + state.stickers.length + '/8)</button></div>' +
+        '<div class="sound-hint">🔊 Tap ▶ PLAY to start (first tap enables sound)</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderHowTo() {
+    return '<div class="center-screen">' +
+      '<div class="how-card">' +
+        '<div class="how-label">HOW TO PLAY</div>' +
+        '<h2 class="how-title">Just 2 taps!</h2>' +
+        '<div class="how-step"><div class="how-num">1</div><div>' +
+          '<div class="how-step-title">See what they want 🧑‍🎓💭☕</div>' +
+          '<div class="how-step-desc">Customer appears with a food bubble. Serve fast!</div>' +
+        '</div></div>' +
+        '<div class="how-step"><div class="how-num">2</div><div>' +
+          '<div class="how-step-title">Tap the food item 👇</div>' +
+          '<div class="how-step-desc">Pick from 6 menu items at the bottom.</div>' +
+        '</div></div>' +
+        '<div class="how-step"><div class="how-num">3</div><div>' +
+          '<div class="how-step-title">Tap the customer ✅</div>' +
+          '<div class="how-step-desc">Right order = coins + combo. Wrong = lose a life.</div>' +
+        '</div></div>' +
+        '<div class="how-bonus">🎁 Catch power-ups, build combos, unlock all 4 characters!</div>' +
+        '<div style="text-align:center;"><button id="next-btn" class="play-btn">GOT IT! →</button></div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderCharSelect() {
+    let cards = '';
+    const keys = ['shubhi', 'aish', 'appu', 'proxy'];
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const c = CHARACTERS[key];
+      const isUnlocked = state.unlocked.indexOf(key) !== -1;
+      let lockedContent = '';
+      if (!isUnlocked) {
+        const lvlNum = key === 'aish' ? 1 : key === 'appu' ? 2 : 3;
+        lockedContent = '<div class="lock-overlay">🔒<div style="font-size:11px; margin-top:6px; color:#1a0f08; font-weight:800;">Beat Level ' + lvlNum + '</div></div>';
+      }
+      cards += '<div class="char-card" data-chef="' + key + '" style="background:' + c.bg + '; border-color:' + c.color + '; opacity:' + (isUnlocked ? 1 : 0.55) + '; cursor:' + (isUnlocked ? 'pointer' : 'not-allowed') + ';">' +
+        lockedContent +
+        '<div style="text-align:center;">' + avatarSVG(key, 100) + '</div>' +
+        '<h3 class="char-name" style="color:' + c.color + ';">' + c.name + '</h3>' +
+        '<div style="text-align:center; margin:4px 0;"><span class="power-badge">' + c.power + '</span></div>' +
+        '<div class="ability-text">' + c.ability + '</div>' +
+        '<div class="quip-bubble">"' + c.intro + '"</div>' +
+        (isUnlocked ? '<div class="pick-btn" style="background:' + c.color + ';">PLAY AS ' + c.name.toUpperCase() + '</div>' : '') +
+      '</div>';
+    }
+    return '<div style="padding:16px; max-width:900px; margin:0 auto;">' +
+      '<div style="text-align:center; margin-bottom:20px;">' +
+        '<div class="how-label">PICK YOUR CHEF</div>' +
+        '<h1 class="section-heading">Who\'s on duty?</h1>' +
+        '<p style="color:#78350f; font-size:13px;">Beat levels to unlock all 4!</p>' +
+      '</div>' +
+      '<div class="char-grid">' + cards + '</div>' +
+      '<div style="text-align:center; margin-top:20px;"><button id="back-title" class="ghost-btn">← back</button></div>' +
+    '</div>';
+  }
+
+  function renderLevelSelect() {
+    const c = CHARACTERS[state.chef];
+    let levels = '';
+    for (let i = 0; i < LEVELS.length; i++) {
+      const lv = LEVELS[i];
+      levels += '<button class="level-card" data-level="' + lv.id + '" style="background:' + lv.bg + ';">' +
+        '<div style="font-size:42px;">' + lv.emoji + '</div>' +
+        '<div style="flex:1; text-align:left;">' +
+          '<div class="level-name">Level ' + lv.id + ': ' + lv.name + '</div>' +
+          '<div class="level-sub">' + lv.subtitle + '</div>' +
+          '<div class="level-meta">🎯 ₹' + lv.target + ' · ⏱ ' + lv.duration + 's</div>' +
+        '</div>' +
+        '<div style="font-size:28px;">▶</div>' +
+      '</button>';
+    }
+    return '<div style="padding:16px; max-width:600px; margin:0 auto;">' +
+      '<div style="text-align:center; margin-bottom:16px;">' +
+        avatarSVG(state.chef, 90) +
+        '<h2 style="color:' + c.color + '; font-size:28px; margin-top:6px; font-weight:900;">' + c.name + ' is ready!</h2>' +
+        '<div class="quip-bubble" style="max-width:260px; margin:8px auto;">"' + c.intro + '"</div>' +
+      '</div>' +
+      '<div class="how-label">CHOOSE LEVEL</div>' +
+      '<div style="display:flex; flex-direction:column; gap:12px; margin-top:12px;">' + levels + '</div>' +
+      '<div style="text-align:center; margin-top:16px;"><button id="back-char" class="ghost-btn">← change character</button></div>' +
+    '</div>';
+  }
+
+  function renderPlay() {
+    const c = CHARACTERS[state.chef];
+    const lv = LEVELS[state.level - 1];
+    const isDark = state.level === 3;
+    const textColor = isDark ? '#fef3c7' : '#1a0f08';
+
+    let menuItems = '';
+    for (let i = 0; i < MENU.length; i++) {
+      const m = MENU[i];
+      menuItems += '<button class="menu-item" data-id="' + m.id + '">' +
+        '<div style="font-size:24px;">' + m.emoji + '</div>' +
+        '<div style="font-size:9px; font-weight:800;">' + m.name + '</div>' +
+        '<div style="font-size:9px;">₹' + m.price + '</div>' +
+      '</button>';
+    }
+
+    setTimeout(function() {
+      updatePlayHUD();
+      updateCustomers();
+    }, 0);
+
+    return '<div class="play-area" style="background:' + lv.bg + '; color:' + textColor + ';">' +
+      '<div class="hud">' +
+        '<div class="hud-box">' +
+          '<div class="hud-label">SCORE</div>' +
+          '<div class="hud-value" id="score">₹0</div>' +
+          '<div class="target-text">/ ₹' + lv.target + '</div>' +
+        '</div>' +
+        '<div class="hud-box">' +
+          '<div class="hud-label">TIME</div>' +
+          '<div class="hud-value" id="time">' + lv.duration + 's</div>' +
+        '</div>' +
+        '<div class="hud-box">' +
+          '<div class="hud-label">LIVES</div>' +
+          '<div class="hud-value" id="lives" style="font-size:16px;">❤️❤️❤️</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="chef-corner">' +
+        '<div style="position:relative;">' + avatarSVG(state.chef, 90) +
+          '<div id="speech" class="speech-bubble" style="display:none; border-color:' + c.color + ';"></div>' +
+        '</div>' +
+        '<div id="combo" class="combo-counter" style="display:none; color:' + c.color + ';"></div>' +
+      '</div>' +
+      '<div id="customer-area" class="customer-area"></div>' +
+      '<div id="powerup-slot"></div>' +
+      '<div id="floats"></div>' +
+      '<div class="menu-bar">' +
+        '<div class="menu-label" style="color:' + (isDark ? '#fef3c7' : '#78350f') + ';">TAP ORDER → TAP CUSTOMER</div>' +
+        '<div id="menu-grid" class="menu-grid">' + menuItems + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderLevelEnd() {
+    const c = CHARACTERS[state.chef];
+    const lv = LEVELS[state.level - 1];
+    const won = state.score >= lv.target;
+    let unlockBadge = '';
+    if (won && state.level < 3) {
+      const nextMap = { 1: 'Aish ❤️', 2: 'Appu 🕶️', 3: 'Proxy 🎧' };
+      unlockBadge = '<div class="unlock-badge">🎁 UNLOCKED: ' + nextMap[state.level] + '!</div>';
+    }
+    return '<div class="center-screen">' +
+      '<div class="end-card" style="border-color:' + (won ? '#16a34a' : '#dc2626') + ';">' +
+        '<div style="font-size:70px; margin-bottom:6px;">' + (won ? '🎉' : '😅') + '</div>' +
+        '<div class="how-label">' + (won ? 'LEVEL CLEAR!' : 'SO CLOSE...') + '</div>' +
+        '<h2 class="section-heading" style="color:' + (won ? '#16a34a' : '#dc2626') + '; font-size:30px;">' + (won ? 'You did it!' : 'Try again!') + '</h2>' +
+        '<div style="margin:14px 0;">' + avatarSVG(state.chef, 90) +
+          '<div class="quip-bubble" style="max-width:260px; margin:8px auto; border:2px solid ' + c.color + ';">"' + (won ? c.comboQuips[0] : c.gameOverQuip) + '"</div>' +
+        '</div>' +
+        '<div class="end-stats">' +
+          '<div class="end-stat"><div class="end-stat-label">SCORE</div><div class="end-stat-value">₹' + state.score + '</div></div>' +
+          '<div class="end-stat"><div class="end-stat-label">SERVED</div><div class="end-stat-value">' + state.served + '</div></div>' +
+          '<div class="end-stat"><div class="end-stat-label">TARGET</div><div class="end-stat-value">₹' + lv.target + '</div></div>' +
+        '</div>' +
+        unlockBadge +
+        '<div style="display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap;">' +
+          '<button id="continue-btn" class="play-btn">' + (won && state.level < 3 ? 'NEXT LEVEL →' : 'PLAY AGAIN ↻') + '</button>' +
+          '<button id="menu-btn" class="ghost-btn">🏠 MENU</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderStickers() {
+    let cards = '';
+    for (let i = 0; i < STICKERS.length; i++) {
+      const s = STICKERS[i];
+      const earned = state.stickers.indexOf(s.id) !== -1;
+      cards += '<div class="sticker ' + (earned ? 'earned' : 'locked') + '">' +
+        '<div style="font-size:42px;">' + s.emoji + '</div>' +
+        '<div class="sticker-name">' + s.name + '</div>' +
+        (earned ? '' : '<div style="font-size:9px; color:#6b7280; margin-top:3px;">LOCKED</div>') +
+      '</div>';
+    }
+    return '<div style="padding:16px; max-width:600px; margin:0 auto;">' +
+      '<div style="text-align:center; margin-bottom:18px;">' +
+        '<div class="how-label">YOUR COLLECTION</div>' +
+        '<h1 class="section-heading">🏆 Sticker Book</h1>' +
+        '<p style="color:#78350f; font-size:14px;">High Score: <strong>₹' + state.highScore + '</strong> · ' + state.stickers.length + '/8</p>' +
+      '</div>' +
+      '<div class="sticker-grid">' + cards + '</div>' +
+      '<div style="text-align:center; margin-top:20px;"><button id="stickers-back" class="play-btn">← BACK</button></div>' +
+    '</div>';
+  }
+
+  // ==========================================
+  // INIT
+  // ==========================================
+  render();
+})();
+</script>
 </body>
 </html>
-
